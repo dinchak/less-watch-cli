@@ -1,0 +1,22 @@
+{
+  "name": "less-watch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "less-watch": "./index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "clean-css": "^4.0.12",
+    "commander": "^2.9.0",
+    "less": "^2.7.2",
+    "moment": "^2.18.1",
+    "watch-fs": "0.0.7"
+  }
+}
