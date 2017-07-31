@@ -1,5 +1,5 @@
 {
-  "name": "less-watch",
+  "name": "less-watch-cli",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
