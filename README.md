@@ -23,13 +23,14 @@ $ less-watch index.less index.css
 -m, --minify      minify output css
 ```
 
-# More Examples
+# Examples
 
+Watch for changes in the bootstrap/less folder, recompile bootstrap.less when a file is created, deleted, or changed.  create a bootstrap.css.map sourcemap and compile immediately when the command is run:
 ```
-# watch for changes in the bootstrap/less folder, recompile bootstrap.less when
-# a file is created, deleted, or changed.  create a bootstrap.css.map sourcemap
-# and compile immediately when the command is run
 $ less-watch -s -c bootstrap/less/bootstrap.less css/bootstrap.css
+```
 
-# same as above but also minify
+Same as above but also minify:
+```
 $ less-watch -scm bootstrap/less/bootstrap.less css/bootstrap.min.css
+``
