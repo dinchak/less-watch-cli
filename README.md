@@ -1,12 +1,12 @@
-less-watch
-==========
+less-watch-cli
+==============
 
-less-watch is a command line utility automatically recompile LESS files to CSS when a change is detected.  less-watch will also watch the folder and subfolders the monitored file exists in for changes.  It works nicely with something like Bootstrap.
+less-watch-cli is a command line utility automatically recompile LESS files to CSS when a change is detected.  less-watch-cli will also watch the folder and subfolders the monitored file exists in for changes.  It works nicely with something like Bootstrap.
 
 # Installation
 
 ```
-$ npm install -g less-watch
+$ npm install -g less-watch-cli
 ```
 
 # Basic Usage
@@ -18,7 +18,7 @@ $ less-watch index.less index.css
 # Options
 
 ```
--s, --source-map  include inline source map
+-s, --source-map  generate source map
 -c, --compile     compile on run
 -m, --minify      minify output css
 ```
@@ -32,4 +32,4 @@ $ less-watch index.less index.css
 $ less-watch -s -c bootstrap/less/bootstrap.less css/bootstrap.css
 
 # same as above but also minify
-$ less-watch -s -c -m bootstrap/less/bootstrap.less css/bootstrap.min.css
+$ less-watch -scm bootstrap/less/bootstrap.less css/bootstrap.min.css
