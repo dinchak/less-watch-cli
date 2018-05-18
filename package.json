@@ -1,8 +1,9 @@
 {
-  "name": "less-watch-cli",
-  "version": "1.0.1",
-  "description": "",
+  "name": "@justgage/less-watch-cli",
+  "version": "1.0.0",
+  "description": "a fork of less-watch-cli that has error reporting",
   "main": "index.js",
+  "flat": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -31,5 +32,9 @@
     "less": "^2.7.2",
     "moment": "^2.18.1",
     "watch-fs": "0.0.7"
+  },
+  "resolutions": {
+    "assert-plus": "1.0.0",
+    "extsprintf": "1.4.0"
   }
 }

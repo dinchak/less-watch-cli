@@ -1,3 +1,10 @@
+# This is a fork 🍴
+
+You're looking at a fork the main things that have changed are:
+
+- Added error reporting to the output, the main version at the time of split didn't show any information about syntax errors
+
+
 less-watch-cli
 ==============
 
