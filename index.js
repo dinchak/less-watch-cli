@@ -40,9 +40,9 @@ if (program.args.length < 2) {
  */
 async function run(inFile, outFile) {
   if (!fs.existsSync(inFile)) {
-    handleError(
-      new Error('input file ' + chalk.cyan(inFile) + ' does not exist')
-    );
+    handleError(new Error(
+      'input file ' + chalk.cyan(inFile) + ' does not exist'
+    ));
   }
 
   try {
@@ -67,27 +67,27 @@ async function run(inFile, outFile) {
  * @param {String} outFile The CSS file to write to
  */
 function createWatcher(inFile, outFile) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     var watcher = new Watcher({
-      paths: [path.dirname(inFile)],
+      paths: [ path.dirname(inFile) ],
       filters: {
-        includeFile: function (file) {
+        includeFile: function(file) {
           return /\.less/.test(file);
         }
       }
     });
 
-    watcher.on('create', function (file) {
+    watcher.on('create', function(file) {
       compile(inFile, outFile, file, chalk.bold.green('file created'));
     });
-    watcher.on('change', function (file) {
+    watcher.on('change', function(file) {
       compile(inFile, outFile, file, chalk.bold.yellow('file changed'));
     });
-    watcher.on('delete', function (file) {
+    watcher.on('delete', function(file) {
       compile(inFile, outFile, file, chalk.bold.red('file deleted'));
     });
 
-    watcher.start(function (err, failed) {
+    watcher.start(function(err, failed) {
       if (err) {
         reject(err);
         return;
@@ -113,7 +113,7 @@ function compile(inFile, outFile, file, event) {
   var relativePath = file.replace(cwd + '/', '');
 
   var lessOpts = {
-    paths: [path.dirname(inFile)],
+    paths: [ path.dirname(inFile) ],
     filename: path.resolve(inFile)
   };
 
@@ -123,29 +123,41 @@ function compile(inFile, outFile, file, event) {
 
   compileOut(inFile, outFile, relativePath, event);
 
-  return less.render(fs.readFileSync(inFile).toString(), lessOpts)
-  .then(function (output) {
-    var css = output.css;
-    var sourceMap = output.map;
+  return less
+    .render(fs.readFileSync(inFile).toString(), lessOpts)
+    .then(
+      function(output) {
+        var css = output.css;
+        var sourceMap = output.map;
 
-    if (program.minify) {
-      if (program.sourceMap) {
-        output = new CleanCSS({sourceMap: true}).minify(css, sourceMap);
-        sourceMap = output.sourceMap;
-      } else {
-        output = new CleanCSS().minify(css);
+        if (program.minify) {
+          if (program.sourceMap) {
+            output = new CleanCSS({ sourceMap: true }).minify(css, sourceMap);
+            sourceMap = output.sourceMap;
+          } else {
+            output = new CleanCSS().minify(css);
+          }
+          css = output.styles;
+        }
+
+        if (program.sourceMap) {
+          css += '\n/*# sourceMappingURL=' + path.basename(outFile) + '.map */';
+          fs.writeFileSync(outFile + '.map', sourceMap);
+        }
+
+        fs.writeFileSync(outFile, css);
+        log('done');
+      },
+      function(error) {
+        errorConsole(error);
+        if (error.message === 'Unrecognised input') {
+          console.error(
+            chalk.yellow('HINT:') +
+              ' check for `;` or `:` or `{` missing or other syntax errors before this point.'
+          );
+        }
       }
-      css = output.styles;
-    }
-
-    if (program.sourceMap) {
-      css += '\n/*# sourceMappingURL=' + path.basename(outFile) + '.map */'
-      fs.writeFileSync(outFile + '.map', sourceMap);
-    }
-
-    fs.writeFileSync(outFile, css);
-    log('done');
-  });
+    );
 }
 
 /**
@@ -184,23 +196,20 @@ function showExamples() {
  * @param {String} outFile The CSS file to write to
  */
 function showOptions(inFile, outFile) {
-  log('    input file: ' + chalk.cyan(inFile))
+  log('    input file: ' + chalk.cyan(inFile));
   log('      watching: ' + chalk.cyan(path.dirname(inFile)));
   log('    compile to: ' + chalk.bold.cyan(outFile));
-  log('    source map: ' + (
-    program.sourceMap ?
-    chalk.green('enabled') :
-    chalk.red('disabled'))
+  log(
+    '    source map: ' +
+      (program.sourceMap ? chalk.green('enabled') : chalk.red('disabled'))
   );
-  log('compile on run: ' + (
-    program.compile ?
-    chalk.green('enabled') :
-    chalk.red('disabled'))
+  log(
+    'compile on run: ' +
+      (program.compile ? chalk.green('enabled') : chalk.red('disabled'))
   );
-  log('        minify: ' + (
-    program.minify ?
-    chalk.green('enabled') :
-    chalk.red('disabled'))
+  log(
+    '        minify: ' +
+      (program.minify ? chalk.green('enabled') : chalk.red('disabled'))
   );
 }
 
@@ -226,4 +235,53 @@ function timestamp() {
 function handleError(err) {
   console.log(err.stack);
   process.exit();
+}
+
+var highlight = function(str, index) {
+  return str.substr(0, index) +
+    chalk.bgRed(str.substr(index, 1)) +
+    str.substr(index + 1);
+};
+
+/**
+ * print out syntax errors. Stolen and modified from less itself: https://github.com/less/less.js/blob/12fe0c6f507485aaec6b519373d9b7f38ac950a4/lib/less-browser/error-reporting.js#L128
+ */
+function errorConsole(e, rootHref) {
+  var template = '{line} {content}';
+  var filename = e.filename || rootHref;
+  var errors = [];
+  var content = '\n' +
+    chalk.red((e.type || 'Syntax') + 'Error: ') +
+    (e.message || 'There is an error in your .less file') +
+    ' in ' +
+    chalk.yellow(filename);
+
+  var errorline = function(e, i, classname, column) {
+    if (e.extract[i] !== undefined) {
+      var errorOnThisLine = classname === 'line';
+      var lineNumber = (parseInt(e.line, 10) || 0) + (i - 1) + ' |';
+      var str = template
+        .replace(
+          /\{line\}/,
+          errorOnThisLine ? chalk.red(lineNumber) : chalk.gray(lineNumber)
+        )
+        .replace(/\{class\}/, classname)
+        .replace(
+          /\{content\}/,
+          column ? highlight(e.extract[i], column) : e.extract[i]
+        );
+      errors.push(str);
+    }
+  };
+
+  if (e.line) {
+    errorline(e, 0, '');
+    errorline(e, 1, 'line', e.column);
+    errorline(e, 2, '');
+    content += ':' + e.line + ':' + (e.column + 1) + '\n' + errors.join('\n');
+  }
+  if (e.stack && (e.extract || options.logLevel >= 4)) {
+    content += '\nStack Trace\n' + e.stack;
+  }
+  console.error(content);
 }
