@@ -1,9 +1,8 @@
 {
-  "name": "@justgage/less-watch-cli",
+  "name": "less-watch-cli",
   "version": "1.0.0",
   "description": "a fork of less-watch-cli that has error reporting",
   "main": "index.js",
-  "flat": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dinchak/less-watch-cli"
+    "url": "https://github.com/justgage/less-watch-cli"
   },
   "license": "MIT",
   "dependencies": {
